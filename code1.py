@@ -4,7 +4,14 @@ import pandas as pd
 import datetime
 import os
 
-while(1):
+timestamp = datetime.datetime.now()
+req_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+current_time = datetime.datetime.now()
+next_day = current_time + datetime.timedelta(days=1)
+next_day_date = next_day.strftime('%Y-%m-%d')
+
+
+while(next_day_date != req_timestamp[:10]):
 
     book = {}
     response = requests.get ('https://api.bithumb.com/public/orderbook/BTC_KRW/?count=5')
@@ -35,9 +42,7 @@ while(1):
 
     df = pd.concat([bids, asks])
 
-    
-    timestamp = datetime.datetime.now()
-    req_timestamp = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+
 
     df['quantity'] = df['quantity'].round(decimals=4)
     df['timestamp'] = req_timestamp
@@ -46,7 +51,7 @@ while(1):
     #print ("\n")
 
 
-    fn = 'result.csv'
+    fn = f'book-{req_timestamp[:10]}-exchange-market.csv'
     #df.to_csv(fn, "./2024-00-00-bithumb-orderbook.csv", header=False, mode = 'a')
     #df.to_csv(fn, "price, quantity, type, timestemp", header=False, mode = 'a')
 
@@ -56,7 +61,12 @@ while(1):
     else:
         df.to_csv(fn, index=False, header=False, mode = 'a')
     
-    check_end_time = req_timestamp[-8:]
-    if check_end_time == '24:59:59': break
 
-    time.sleep(3)  
+    '''
+    if next_day_date == req_timestamp[:10]:
+        # print("[]: ", req_timestamp[:10])
+        break
+    '''
+
+
+    time.sleep(4.9)
